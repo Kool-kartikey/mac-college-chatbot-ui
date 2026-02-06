@@ -1,238 +1,267 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>MAC College Chatbot</title>
+<meta charset="UTF-8">
+<title>MAC College Chatbot</title>
 
-  <style>
-    body {
-      margin: 0;
-      height: 100vh;
-      background: url("mac_homepage.png") no-repeat center center fixed;
-      background-size: cover;
-      font-family: Arial, sans-serif;
-    }
+<style>
+body {
+  margin: 0;
+  height: 100vh;
+  background: url("mac_homepage.png") no-repeat center center fixed;
+  background-size: cover;
+  font-family: Arial, sans-serif;
+}
 
-    /* Floating Squircle Button */
-    #chatbot-button {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      width: 60px;
-      height: 60px;
-      background: #1f3c88;
-      color: white;
-      font-size: 26px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      border-radius: 18px;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-      z-index: 1000;
-    }
+/* Floating Animated Button */
+#chatbot-button {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  width: 65px;
+  height: 65px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1f3c88, #4b6cb7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  z-index: 1000;
+  animation: glow 3s infinite alternate;
+}
 
-    /* Chat Container (compact) */
-    #chat-container {
-      position: fixed;
-      bottom: 90px;
-      right: 20px;
-      width: 330px;
-      height: 360px; /* compact height */
-      background: white;
-      border-radius: 18px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.5);
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      z-index: 1000;
-      transition: all 0.3s ease-in-out;
-    }
+.chat-icon {
+  font-size: 26px;
+  color: white;
+  z-index: 2;
+}
 
-    #chat-header {
-      background: #1f3c88;
-      color: white;
-      padding: 8px 10px;
-      font-weight: bold;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+.pulse-ring {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: rgba(75,108,183,0.4);
+  animation: pulse 2s infinite;
+  z-index: 1;
+}
 
-    #reset-btn {
-      background: white;
-      color: #1f3c88;
-      border: none;
-      border-radius: 8px;
-      padding: 3px 8px;
-      cursor: pointer;
-      font-size: 13px;
-    }
+@keyframes glow {
+  0% { box-shadow: 0 0 10px #4b6cb7; }
+  100% { box-shadow: 0 0 25px #1f3c88; }
+}
 
-    #reset-btn:hover {
-      background: #e0e0e0;
-    }
+@keyframes pulse {
+  0% { transform: scale(0.8); opacity: 0.7; }
+  70% { transform: scale(1.4); opacity: 0; }
+  100% { transform: scale(0.8); opacity: 0; }
+}
 
-    #chat-messages {
-      flex: 1;
-      padding: 10px;
-      overflow-y: auto;
-      background: #f4f6fb;
-      display: flex;
-      flex-direction: column;
-    }
+/* Chat Container */
+#chat-container {
+  position: fixed;
+  bottom: 100px;
+  right: 25px;
+  width: 330px;
+  height: 360px;
+  background: white;
+  border-radius: 18px;
+  box-shadow: 0 6px 25px rgba(0,0,0,0.5);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transform: scale(0.8);
+  opacity: 0;
+  transition: all 0.25s ease-in-out;
+  z-index: 1000;
+}
 
-    .message {
-      margin: 6px 0;
-      padding: 8px 12px;
-      border-radius: 12px;
-      max-width: 80%;
-      font-size: 14px;
-    }
+#chat-container.active {
+  transform: scale(1);
+  opacity: 1;
+}
 
-    .user {
-      background: #1f3c88;
-      color: white;
-      align-self: flex-end;
-    }
+/* Header */
+#chat-header {
+  background: #1f3c88;
+  color: white;
+  padding: 8px 10px;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
-    .bot {
-      background: #e0e0e0;
-      color: black;
-      align-self: flex-start;
-    }
+#reset-btn {
+  background: white;
+  color: #1f3c88;
+  border: none;
+  border-radius: 8px;
+  padding: 3px 8px;
+  cursor: pointer;
+  font-size: 13px;
+}
 
-    .timestamp {
-      font-size: 10px;
-      opacity: 0.6;
-      margin-top: 2px;
-    }
+#reset-btn:hover {
+  background: #e0e0e0;
+}
 
-    #chat-input-area {
-      display: flex;
-      border-top: 1px solid #ccc;
-    }
+/* Messages */
+#chat-messages {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+  background: #f4f6fb;
+  display: flex;
+  flex-direction: column;
+}
 
-    #user-input {
-      flex: 1;
-      padding: 8px;
-      border: none;
-      outline: none;
-      font-size: 14px;
-    }
+.message {
+  margin: 6px 0;
+  padding: 8px 12px;
+  border-radius: 12px;
+  max-width: 80%;
+  font-size: 14px;
+}
 
-    #send-btn {
-      background: #1f3c88;
-      color: white;
-      border: none;
-      padding: 8px 12px;
-      cursor: pointer;
-    }
+.user {
+  background: #1f3c88;
+  color: white;
+  align-self: flex-end;
+}
 
-    #send-btn:hover {
-      background: #162a63;
-    }
+.bot {
+  background: #e0e0e0;
+  color: black;
+  align-self: flex-start;
+}
 
-    .hidden {
-      display: none;
-    }
-  </style>
+.timestamp {
+  font-size: 10px;
+  opacity: 0.6;
+  margin-top: 2px;
+}
+
+/* Input */
+#chat-input-area {
+  display: flex;
+  border-top: 1px solid #ccc;
+}
+
+#user-input {
+  flex: 1;
+  padding: 8px;
+  border: none;
+  outline: none;
+  font-size: 14px;
+}
+
+#send-btn {
+  background: #1f3c88;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+#send-btn:hover {
+  background: #162a63;
+}
+</style>
 </head>
 
 <body>
 
-  <!-- Floating Button -->
-  <div id="chatbot-button">💬</div>
+<!-- Floating Button -->
+<div id="chatbot-button">
+  <div class="pulse-ring"></div>
+  <div class="chat-icon">💬</div>
+</div>
 
-  <!-- Chat Window -->
-  <div id="chat-container" class="hidden">
-    <div id="chat-header">
-      <span>MAC College Chatbot</span>
-      <button id="reset-btn" onclick="resetChat()">⟳</button>
-    </div>
-
-    <div id="chat-messages"></div>
-
-    <div id="chat-input-area">
-      <input type="text" id="user-input" placeholder="Ask about college info..." />
-      <button id="send-btn" onclick="sendMessage()">Send</button>
-    </div>
+<!-- Chat Window -->
+<div id="chat-container">
+  <div id="chat-header">
+    <span>MAC College Chatbot</span>
+    <button id="reset-btn" onclick="resetChat()">⟳</button>
   </div>
 
-  <script>
-    const chatButton = document.getElementById("chatbot-button");
-    const chatContainer = document.getElementById("chat-container");
-    const chatMessages = document.getElementById("chat-messages");
+  <div id="chat-messages"></div>
 
-    // 🔴 CHANGE THIS TO YOUR NGROK URL
-    const API_URL = "https://fernande-uncomplemented-dyan.ngrok-free.dev/chat";
+  <div id="chat-input-area">
+    <input type="text" id="user-input" placeholder="Ask about college info...">
+    <button id="send-btn" onclick="sendMessage()">Send</button>
+  </div>
+</div>
 
-    chatButton.onclick = () => {
-      chatContainer.classList.toggle("hidden");
-    };
+<script>
+const chatButton = document.getElementById("chatbot-button");
+const chatContainer = document.getElementById("chat-container");
+const chatMessages = document.getElementById("chat-messages");
 
-    function getTime() {
-      const now = new Date();
-      return now.getHours() + ":" + now.getMinutes().toString().padStart(2, "0");
-    }
+// 🔴 UPDATE THIS EACH TIME NGROK RESTARTS
+const API_URL = "https://fernande-uncomplemented-dyan.ngrok-free.dev/chat";
 
-    function addMessage(text, sender) {
-      const msgDiv = document.createElement("div");
-      msgDiv.classList.add("message", sender);
-      msgDiv.innerHTML = text + `<div class="timestamp">${getTime()}</div>`;
-      chatMessages.appendChild(msgDiv);
-      chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
+chatButton.onclick = () => {
+  chatContainer.classList.toggle("active");
+};
 
-    function resetChat() {
-      chatMessages.innerHTML = "";
-      addMessage("Chat reset. Ask a new question about Maharaja Agrasen College.", "bot");
-    }
+function getTime() {
+  const now = new Date();
+  return now.getHours() + ":" +
+         now.getMinutes().toString().padStart(2, "0");
+}
 
-    async function sendMessage() {
-      const input = document.getElementById("user-input");
-      const message = input.value.trim();
+function addMessage(text, sender) {
+  const msgDiv = document.createElement("div");
+  msgDiv.classList.add("message", sender);
+  msgDiv.innerHTML = text +
+    `<div class="timestamp">${getTime()}</div>`;
+  chatMessages.appendChild(msgDiv);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
 
-      if (!message) return;
+function resetChat() {
+  chatMessages.innerHTML = "";
+  addMessage("Chat reset. Ask a new question about Maharaja Agrasen College.", "bot");
+}
 
-      addMessage(message, "user");
-      input.value = "";
+async function sendMessage() {
+  const input = document.getElementById("user-input");
+  const message = input.value.trim();
+  if (!message) return;
 
-      addMessage("Typing...", "bot");
+  addMessage(message, "user");
+  input.value = "";
 
-      try {
-        const response = await fetch(API_URL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ query: message })
-        });
+  addMessage("Typing...", "bot");
 
-        const data = await response.json();
-
-        // remove "Typing..."
-        chatMessages.lastChild.remove();
-
-        addMessage(data.answer, "bot");
-
-      } catch (error) {
-        chatMessages.lastChild.remove();
-        addMessage("Server not connected.", "bot");
-      }
-    }
-
-    // Enter key support
-    document.getElementById("user-input").addEventListener("keypress", function (e) {
-      if (e.key === "Enter") {
-        sendMessage();
-      }
+  try {
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query: message })
     });
 
-    // Welcome message
-    addMessage("Welcome! Ask me about Maharaja Agrasen College.", "bot");
-  </script>
+    const data = await response.json();
+    chatMessages.lastChild.remove();
+    addMessage(data.answer, "bot");
+
+  } catch (error) {
+    chatMessages.lastChild.remove();
+    addMessage("Server not connected.", "bot");
+  }
+}
+
+// Enter key support
+document.getElementById("user-input").addEventListener("keypress", function(e) {
+  if (e.key === "Enter") {
+    sendMessage();
+  }
+});
+
+// Welcome message
+addMessage("Welcome! Ask me about Maharaja Agrasen College.", "bot");
+</script>
 
 </body>
 </html>
-
